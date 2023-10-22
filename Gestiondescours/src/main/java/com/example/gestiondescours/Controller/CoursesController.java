@@ -47,6 +47,10 @@ public class CoursesController {
     public List<Courses> getCoursesByNiveau(@PathVariable Niveau niveau) {
         return coursesService.getCoursesByNiveau(niveau);
     }
+    @GetMapping("{id}")
+    public Courses getCoursesByID(@PathVariable int id) {
+        return coursesService.getCourseByid(id);
+    }
 
     @GetMapping("/by-Format/{Format}")
     public List<Courses> getCoursesByFormat(@PathVariable Format Format){

@@ -1,6 +1,22 @@
 version: "2.4"
    #-------------------------------- service----------------------------------------  
 services:
+
+  avance-service:
+      build:
+        context: ./Avance
+        dockerfile: Dockerfile
+      container_name: avance-service
+      ports:
+        - "3000:3000"
+      image: avance:v4
+      depends_on:
+        - Eureka
+        - avanceDB
+      environment:
+        - EUREKA_HOST=Eureka
+        - EUREKA_PORT=8761  
+        - DB_URI=mongodb://avanceDB:27017/avanceDB
    #--------------------------------cours----------------------------------------  
   Courseserver:
     container_name: courservice
@@ -152,6 +168,13 @@ services:
 
     ports:
       - 5433:5432
+  
+  avanceDB:
+    container_name: mongo
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017"
 
   Eureka:
     container_name: serviceregistry
@@ -209,6 +232,10 @@ services:
       SPRING_CLOUD_GATEWAY_ROUTES_7_ID: SectionsServices
       SPRING_CLOUD_GATEWAY_ROUTES_7_URI: http://ClassServer:8088
       SPRING_CLOUD_GATEWAY_ROUTES_7_PREDICATES_0: Path=/api/sections/**
+
+      SPRING_CLOUD_GATEWAY_ROUTES_8_ID: avance-service
+      SPRING_CLOUD_GATEWAY_ROUTES_8_URI: http://avance-service:3000
+      SPRING_CLOUD_GATEWAY_ROUTES_8_PREDICATES_0: Path=/api/pluscours/**
 
       
 

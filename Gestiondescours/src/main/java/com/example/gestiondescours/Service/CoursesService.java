@@ -45,6 +45,11 @@ public class CoursesService implements ICourseservice {
     }
 
     @Override
+    public Courses getCourseByid(int id) {
+        return coursesRepository.findById(id).get();
+    }
+
+    @Override
     public List<Courses> getCoursesByFormat(Format Format) {
         return coursesRepository.findCoursesByFormat(Format);
     }

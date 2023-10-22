@@ -16,6 +16,7 @@ public interface ICourseservice {
     public String deleteCourses(int id) ;
     public List<Courses> getCoursesByNiveau(Niveau niveau);
 
+    public Courses getCourseByid(int id ) ;
     public List<Courses> getCoursesByFormat(Format Format);
 
     public   Courses findCoursesByNom(String nom);

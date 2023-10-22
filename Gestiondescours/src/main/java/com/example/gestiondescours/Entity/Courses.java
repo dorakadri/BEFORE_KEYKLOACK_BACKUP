@@ -23,10 +23,10 @@ public class Courses implements Serializable {
     private Date time ;
 
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Format format ;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Niveau niveau ;
 
 

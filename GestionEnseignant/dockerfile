@@ -1,4 +1,4 @@
 FROM openjdk:8
-EXPOSE 8085
+EXPOSE 8760
 ADD target/Enseignant-0.0.1-SNAPSHOT.jar Enseignant-0.0.1.jar
 ENTRYPOINT ["java", "-jar", "Enseignant-0.0.1.jar"]

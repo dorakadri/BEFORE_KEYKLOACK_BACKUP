@@ -20,12 +20,10 @@ public class EnseignantApplication {
         SpringApplication.run(EnseignantApplication.class, args);
     }
     @Bean
-ApplicationRunner init (IEnseignantRepository repository){
-        return args ->{
-            Stream.of("sarra").forEach(nom ->{
-                repository.save(new Enseignant(nom));
-            });
-            repository.findAll().forEach(System.out::println);
+    ApplicationRunner init() {
+        return args -> {
+            System.out.println("Spring Boot application started!");
+            // Your initialization logic goes here
         };
     }
 }
