@@ -38,7 +38,7 @@ services:
     build: .\gestionEtudiant
     ports:
       - "8082:8082"
-    image: "etudiant:v2"
+    image: "etudiants:v2"
     depends_on:
       - Eureka
       - db-mysql-etudiant
@@ -70,7 +70,7 @@ services:
     build: .\GestionEnseignant
     ports:
       - "8085:8085"
-    image: "enseignant:v1"
+    image: "enseignant:v2"
     depends_on:
       - Eureka
       - db-mysql-enseignant
@@ -213,7 +213,7 @@ services:
       SPRING_CLOUD_GATEWAY_ROUTES_2_URI : http://eventMicroservice:8087
       SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0 : Path=/api/events/**
                 #-------------------------------- ENSEIGNANT ----------------------------------------  
-      SPRING_CLOUD_GATEWAY_ROUTES_3_ID : Enseignant
+      SPRING_CLOUD_GATEWAY_ROUTES_3_ID : enseignant-service
       SPRING_CLOUD_GATEWAY_ROUTES_3_URI : http://Enseignant:8085
       SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0 : Path=/api/enseignants/**
                 #-------------------------------- STAGE ----------------------------------------  

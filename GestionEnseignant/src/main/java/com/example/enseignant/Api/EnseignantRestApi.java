@@ -26,7 +26,7 @@ public class EnseignantRestApi {
         return new ResponseEntity<>(enseignants, HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Enseignant> addEnseignant(@RequestBody  Enseignant enseignant)
     { return new ResponseEntity<>(EnseignantService.addEnseignant(enseignant), HttpStatus.OK); }
