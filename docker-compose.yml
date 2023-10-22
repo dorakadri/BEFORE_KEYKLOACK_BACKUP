@@ -1,0 +1,215 @@
+version: "2.4"
+   #-------------------------------- service----------------------------------------  
+services:
+   #--------------------------------cours----------------------------------------  
+  Courseserver:
+    container_name: courservice
+    build: .\Gestiondescours
+    ports:
+      - "8084:8084"
+    hostname: coursmanagment
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://coursedb:5432/gestioncours
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+    image: courservices:v1
+
+    depends_on:
+      - Eureka
+      - coursedb
+   #-----------------------------------etudiant------------------------------------------  
+  etudiant:
+    container_name: etudiant
+    build: .\gestionEtudiant
+    ports:
+      - "8082:8082"
+    image: "etudiant:v2"
+    depends_on:
+      - Eureka
+      - db-mysql-etudiant
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql-etudiant:3306/Etudiant?createDatabaseIfNotExist=true&userSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+    #-------------------------------------event----------------------------------------  
+  eventMicroservice:
+    container_name: eventMicroservice
+    build:
+      context: ./GestionEvenement
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql-event:3306/event-microservice?createDatabaseIfNotExist=true&userSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+    image: event:v1
+    depends_on:
+      - Eureka
+      - db-mysql-event
+   
+    #-------------------------------------Enseignant----------------------------------------  
+  Enseignant:
+    container_name: enseignant-service
+    build: .\GestionEnseignant
+    ports:
+      - "8085:8085"
+    image: "enseignant:v1"
+    depends_on:
+      - Eureka
+      - db-mysql-enseignant
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql-enseignant:3306/Enseignant?createDatabaseIfNotExist=true&userSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+      #-------------------------------------stage---------------------------------------- 
+  Stage:
+    container_name: stage-service
+    build: .\GestionStage
+    ports:
+      - "1234:1234"
+    image: "stage:v3"
+    depends_on:
+      - Eureka
+      - db-mysql-stage
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mysql-stage:3306/Enseignant?createDatabaseIfNotExist=true&userSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+    #-------------------------------- Classes ----------------------------------------
+  ClassServer:
+    container_name: ClassesManagements
+    build: .\GestionClasses
+    ports:
+      - "8760:8088"
+    hostname: Classesmanagments
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://classesdb:5432/gestionclasses
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+    image: gestionclass:v3
+
+    depends_on:
+      - Eureka
+      - classesdb
+
+    #-------------------------------- databases ----------------------------------------  
+  db-mysql-etudiant:
+    image: "mysql:5.6"
+    container_name: db-mysql-etudiant  
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      #- MYSQL_DATABASE=job
+    ports:
+      - "3307:3306"
+
+  db-mysql-enseignant:
+    image: "mysql:5.6"
+    container_name: db-mysql-enseignant  
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      #- MYSQL_DATABASE=job
+    ports:
+      - "3308:3306"
+
+  db-mysql-event:
+    image: "mysql:5.6"
+    container_name: db-mysql-event  
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      #- MYSQL_DATABASE=job
+    ports:
+      - "3309:3306"
+
+  db-mysql-stage:
+    image: "mysql:5.6"
+    container_name: db-mysql-stage  
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      #- MYSQL_DATABASE=job
+    ports:
+      - "3310:3306" 
+
+  coursedb:
+    container_name: coursedb
+    image: "postgres:latest"
+    environment:
+      POSTGRES_USER: postgresdora
+      POSTGRES_PASSWORD: dora
+      POSTGRES_DB: gestioncours
+   
+    ports:
+      - 5432:5432
+
+  classesdb:
+    container_name: classesdb
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lotfi
+      POSTGRES_DB: gestionclasses
+
+    ports:
+      - 5433:5432
+
+  Eureka:
+    container_name: serviceregistry
+    build: .\EurekaServer
+    ports:
+      - "8761:8761"
+    hostname: serviceregistry
+    image: "eureka:v1"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://Eureka:8761/eureka/
+
+  Apigateway:
+    container_name: apigatewayserver
+    build : ./API_Gateway_server
+    ports:
+      - 8086:8086
+    image: "apigateway:v1"
+    restart: always
+    depends_on:
+      - Eureka
+      - Courseserver
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE : http://Eureka:8761/eureka/
+      EUREKA_INSTANCE_LEASERENEWALINTERVALINSECONDS: 10
+      EUREKA_INSTANCE_LEASEEXPIRATIONDURATIONINSECONDS: 30
+                #-------------------------------- COURS ----------------------------------------  
+      SPRING_CLOUD_GATEWAY_ROUTES_0_ID : Courseserver
+      SPRING_CLOUD_GATEWAY_ROUTES_0_URI : http://Courseserver:8084
+      SPRING_CLOUD_GATEWAY_ROUTES_0_PREDICATES_0 : Path=/api/cours/**
+          #-------------------------------- ETUDIANT ----------------------------------------  
+      SPRING_CLOUD_GATEWAY_ROUTES_1_ID : etudiant
+      SPRING_CLOUD_GATEWAY_ROUTES_1_URI : http://etudiant:8082
+      SPRING_CLOUD_GATEWAY_ROUTES_1_PREDICATES_0 : Path=/api/etudiants/** 
+                #-------------------------------- event ----------------------------------------  
+      SPRING_CLOUD_GATEWAY_ROUTES_2_ID : eventMicroservice
+      SPRING_CLOUD_GATEWAY_ROUTES_2_URI : http://eventMicroservice:8087
+      SPRING_CLOUD_GATEWAY_ROUTES_2_PREDICATES_0 : Path=/api/events/**
+                #-------------------------------- ENSEIGNANT ----------------------------------------  
+      SPRING_CLOUD_GATEWAY_ROUTES_3_ID : Enseignant
+      SPRING_CLOUD_GATEWAY_ROUTES_3_URI : http://Enseignant:8085
+      SPRING_CLOUD_GATEWAY_ROUTES_3_PREDICATES_0 : Path=/api/enseignants/**
+                #-------------------------------- STAGE ----------------------------------------  
+      SPRING_CLOUD_GATEWAY_ROUTES_4_ID : Stage
+      SPRING_CLOUD_GATEWAY_ROUTES_4_URI : http://Stage:1234
+      SPRING_CLOUD_GATEWAY_ROUTES_4_PREDICATES_0 : Path=/api/stages/**
+
+      SPRING_CLOUD_GATEWAY_ROUTES_5_ID: ClassesServices
+      SPRING_CLOUD_GATEWAY_ROUTES_5_URI: http://ClassServer:8088
+      SPRING_CLOUD_GATEWAY_ROUTES_5_PREDICATES_0: Path=/api/classes/**
+
+      SPRING_CLOUD_GATEWAY_ROUTES_6_ID: EtagesServices
+      SPRING_CLOUD_GATEWAY_ROUTES_6_URI: http://ClassServer:8088
+      SPRING_CLOUD_GATEWAY_ROUTES_6_PREDICATES_0: Path=/api/etages/**
+
+      SPRING_CLOUD_GATEWAY_ROUTES_7_ID: SectionsServices
+      SPRING_CLOUD_GATEWAY_ROUTES_7_URI: http://ClassServer:8088
+      SPRING_CLOUD_GATEWAY_ROUTES_7_PREDICATES_0: Path=/api/sections/**
+
+      
+
+

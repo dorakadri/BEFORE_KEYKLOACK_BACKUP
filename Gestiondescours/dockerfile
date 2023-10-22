@@ -1,0 +1,4 @@
+FROM openjdk:8
+EXPOSE 8084
+ADD target/Gestiondescours-0.0.1-SNAPSHOT.jar Gestiondescours-0.0.1.jar
+ENTRYPOINT ["java", "-jar", "Gestiondescours-0.0.1.jar"]

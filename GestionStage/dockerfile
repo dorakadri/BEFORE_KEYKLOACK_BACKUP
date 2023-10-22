@@ -1,0 +1,4 @@
+FROM openjdk:8
+EXPOSE 1234
+ADD target/Gestionstage-0.0.1-SNAPSHOT.jar Gestionstage-0.0.1.jar
+ENTRYPOINT ["java", "-jar", "Gestionstage-0.0.1.jar"]
