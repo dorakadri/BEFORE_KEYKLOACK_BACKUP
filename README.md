@@ -17,7 +17,7 @@ In this application we have a total of 9 microServices :
 ### MSs & their PORTS
 | MicroService | local PORT |
 | ------------ | ----------- |
-| Api-Gateway | 8686 |
+| Api-Gateway | 8086 |
 | Eureka-Server | 8761 |
 | Student-MS | 8082 |
 | Course-MS | 8084 |
